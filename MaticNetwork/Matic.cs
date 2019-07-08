@@ -27,7 +27,6 @@ namespace MaticNetwork
 {
     /// <summary>
     /// Author: Ebube Ud
-    /// This Class Handles all Operations that Matic Supports
     /// </summary>
     public class Matic
     {
@@ -121,7 +120,6 @@ namespace MaticNetwork
 
         /// <summary>
         /// Get ERC721 Token Balance
-        /// Not Tested
         /// </summary>
         /// <param name="userAddress">userAddress holds the address of the user</param>
         /// <param name="tokenAddress">tokenAddress holds the address of the contract</param>
@@ -157,7 +155,6 @@ namespace MaticNetwork
 
         /// <summary>
         /// Gets the ERC721 Token Of the Owner(address) using the index Id
-        /// Not Tested
         /// </summary>
         /// <param name="address">The Address of the owner</param>
         /// <param name="tokenAddress">THe Address of the Contract</param>
@@ -192,7 +189,6 @@ namespace MaticNetwork
 
         /// <summary>
         /// Deposit Ethers
-        /// Tested - Works
         /// </summary>
         /// <param name="options">Options for the transaction</param>
         /// <returns></returns>
@@ -214,7 +210,6 @@ namespace MaticNetwork
 
         /// <summary>
         /// Approves Tokens for Deposit
-        /// Tested - Works
         /// </summary>
         /// <param name="tokenAddress">Must be a valid ERC20 contract Address</param>
         /// <param name="Amount">Amount of tokens to be approved</param>
@@ -252,7 +247,6 @@ namespace MaticNetwork
 
         /// <summary>
         /// Deposit ERC20 Tokens
-        /// Not Tested
         /// </summary>
         /// <param name="tokenAddress">The Token Address</param>
         /// <param name="userAddress">The Address of the User</param>
