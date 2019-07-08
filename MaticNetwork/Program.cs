@@ -6,7 +6,7 @@ namespace MaticNetwork
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            //Some Examples will be updated 
         }
     }
 }

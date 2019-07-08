@@ -5,4 +5,12 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\ContractFunctions\DepositManagerFunctions\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Nethereum.HdWallet" Version="3.0.0" />
+  </ItemGroup>
+
 </Project>
