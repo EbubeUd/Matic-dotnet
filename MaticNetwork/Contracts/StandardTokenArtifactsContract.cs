@@ -31,10 +31,8 @@ namespace MaticNetwork.Contracts
 
         public StandardTokenArtifactsContract(string provider, string contractAddress)
         {
-
             ProviderUrl = provider;
             ContractAddress = contractAddress;
-
         }
 
         #endregion

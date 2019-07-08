@@ -31,8 +31,8 @@ namespace MaticNetwork
     public class Matic
     {
         #region Initializations
-        string ParentWeb3ProviderUrl;
-        string MaticWeb3ProviderUrl;
+        string ParentProvider;
+        string MaticProvider;
 
         Web3 web3;
         Web3 ParentWeb3;
@@ -58,9 +58,12 @@ namespace MaticNetwork
 
         public Matic(MaticInitOptions options)
         {
+            if (String.IsNullOrEmpty(options.MaticProvider)) throw new Exception("Matic Provider is required");
+            if (String.IsNullOrEmpty(options.ParentProvider)) throw new Exception("Parent provider is required");
+
             //Assign the Web3 Provider Urls
-            ParentWeb3ProviderUrl = options.ParentProvider;
-            MaticWeb3ProviderUrl = options.MaticProvider;
+            ParentProvider = options.ParentProvider;
+            MaticProvider = options.MaticProvider;
 
             //Define the Addresses For Matic
             RootChainContractAddress = options.RootChainAddress;
@@ -68,14 +71,14 @@ namespace MaticNetwork
             DepositManagerContractAddress = options.DepositManagerAddress;
 
             //Define the Web3 Instances
-            web3 = new Web3(MaticWeb3ProviderUrl);
-            ParentWeb3 = new Web3(ParentWeb3ProviderUrl);
+            web3 = new Web3(MaticProvider);
+            ParentWeb3 = new Web3(ParentProvider);
 
             //Create Root Chain Contract
-            maticRootChainContract = new RootChainContract(ParentWeb3ProviderUrl, RootChainContractAddress);
+            maticRootChainContract = new RootChainContract(ParentProvider, RootChainContractAddress);
 
             //Create Withdrawal Manger Contract
-            maticWithrawalManagerContract = new WithdrawalManagerContract(MaticWeb3ProviderUrl, WithdrawManagerContractAddress);
+            maticWithrawalManagerContract = new WithdrawalManagerContract(MaticProvider, WithdrawManagerContractAddress);
 
             //Create Deposit Manager Contract
             maticDepositManagerContract = new DepositManagerContract(web3, DepositManagerContractAddress);
@@ -98,7 +101,6 @@ namespace MaticNetwork
 
         /// <summary>
         /// get matic token address mapped with mainchain tokenAddress.
-        /// Tested But not yet sure of the response
         /// </summary>
         /// <param name="tokenAddress">tokenAddress must be valid token address</param>
         /// <returns>String</returns>
@@ -130,10 +132,10 @@ namespace MaticNetwork
             try
             {
 
-                string web3ProviderUrl = MaticWeb3ProviderUrl;
+                string web3ProviderUrl = MaticProvider;
 
                 //Set The web3 Object to the Parent Web3 Object if UseParent is set to true
-                if (options.UseParent) web3ProviderUrl = ParentWeb3ProviderUrl;
+                if (options.UseParent) web3ProviderUrl = ParentProvider;
 
                 //Get the ERC721 Contract using the token address of the contract
                 ERC721TokenContract erc721Contract = new ERC721TokenContract(web3ProviderUrl, tokenAddress);
@@ -165,13 +167,13 @@ namespace MaticNetwork
         {
             try
             {
-                string web3ProviderUrl = MaticWeb3ProviderUrl;
+                string web3ProviderUrl = MaticProvider;
 
                 //Set The web3 Object to the Parent Web3 Object if UseParent is set to true
-                if (options.UseParent) web3ProviderUrl = ParentWeb3ProviderUrl;
+                if (options.UseParent) web3ProviderUrl = ParentProvider;
 
                 //Get the ERC721 Contract using the token address of the contract
-                ERC721TokenContract erc721Contract = new ERC721TokenContract(MaticWeb3ProviderUrl, tokenAddress);
+                ERC721TokenContract erc721Contract = new ERC721TokenContract(MaticProvider, tokenAddress);
 
                 //Get the TokenId from the Contract
                 int TokenId = await erc721Contract.GetTokenOfOwnerByIndex(address, index);
@@ -229,7 +231,7 @@ namespace MaticNetwork
 
 
             //Get the Standard Token Artifacts Contract using the token address of the contract
-            StandardTokenArtifactsContract standardTokenArtifacts = new StandardTokenArtifactsContract(MaticWeb3ProviderUrl, tokenAddress);
+            StandardTokenArtifactsContract standardTokenArtifacts = new StandardTokenArtifactsContract(MaticProvider, tokenAddress);
 
             //Build the model for Approve
             ERC20ApproveModel model = new ERC20ApproveModel()
@@ -301,7 +303,7 @@ namespace MaticNetwork
 
 
             //Get the contract using the Token Address
-            ERC721TokenContract erc721Contract = new ERC721TokenContract(ParentWeb3ProviderUrl, tokenAddress);
+            ERC721TokenContract erc721Contract = new ERC721TokenContract(ParentProvider, tokenAddress);
             ERC721SafeTransferFromModel safeTransferModel = new ERC721SafeTransferFromModel()
             {
                 From = options.From,
@@ -337,7 +339,7 @@ namespace MaticNetwork
 
 
             //Get the Contract using the token Address
-            ERC721TokenContract erc721Contract = new ERC721TokenContract(ParentWeb3ProviderUrl, tokenAddress);
+            ERC721TokenContract erc721Contract = new ERC721TokenContract(ParentProvider, tokenAddress);
             ERC721ApproveModel approveModel = new ERC721ApproveModel()
             {
                 To = tokenAddress,
@@ -408,10 +410,10 @@ namespace MaticNetwork
             if (String.IsNullOrEmpty(options.SenderPrivateKey)) throw new Exception("Please provide the private Key first, using 'Matic.Wallet = <PrivateKey>'");
 
 
-            string web3Provider = MaticWeb3ProviderUrl;
+            string web3Provider = MaticProvider;
 
             //Set The web3 Object to the Parent Web3 Object if UseParent is set to true
-            if (options.UseParent) web3Provider = ParentWeb3ProviderUrl;
+            if (options.UseParent) web3Provider = ParentProvider;
 
             //Get the contract using the token Address
             ERC20TokenContract erc20TokenContract = new ERC20TokenContract(web3Provider, tokenAddress);
@@ -449,7 +451,7 @@ namespace MaticNetwork
 
 
             //Get the Contract with the token Address
-            ERC721TokenContract erc721TokenContract = new ERC721TokenContract(MaticWeb3ProviderUrl, tokenAddress);
+            ERC721TokenContract erc721TokenContract = new ERC721TokenContract(MaticProvider, tokenAddress);
 
             //Send the Transaction
             ERC721TransferFromModel transferModel = new ERC721TransferFromModel()
@@ -467,7 +469,6 @@ namespace MaticNetwork
 
         /// <summary>
         /// Transfer Ethers
-        /// Tested
         /// </summary>
         /// <param name="to">Address of the reciepient</param>
         /// <param name="amount">Amount of Ethers to Transfer</param>
@@ -491,7 +492,7 @@ namespace MaticNetwork
                 if (!options.UseParent) return await TransferTokens(MaticWethAddress, to, amount, options);
 
                 //Send the Transaction using the parent web3
-                Web3 clientWeb3 = Web3ClientHelper.GetWeb3Client(ParentWeb3ProviderUrl, options.SenderPrivateKey);
+                Web3 clientWeb3 = Web3ClientHelper.GetWeb3Client(ParentProvider, options.SenderPrivateKey);
                 TransactionReceipt response = await clientWeb3.Eth.GetEtherTransferService().TransferEtherAndWaitForReceiptAsync(to, 0.11m); ;
 
                 return response.TransactionHash;
@@ -525,7 +526,7 @@ namespace MaticNetwork
 
 
             //Get the Contract Using the token Address
-            ERC20TokenContract erc20Contract = new ERC20TokenContract(MaticWeb3ProviderUrl, tokenAddress);
+            ERC20TokenContract erc20Contract = new ERC20TokenContract(MaticProvider, tokenAddress);
             ERC20WithdrawModel withdrawModel = new ERC20WithdrawModel()
             {
                 Amount = amount
@@ -557,7 +558,7 @@ namespace MaticNetwork
 
 
             //Get the Contract using the tokenAddress
-            ERC721TokenContract erc721TokenContract = new ERC721TokenContract(MaticWeb3ProviderUrl, tokenAddress);
+            ERC721TokenContract erc721TokenContract = new ERC721TokenContract(MaticProvider, tokenAddress);
             ERC721WithdrawModel withdrawalModel = new ERC721WithdrawModel()
             {
                 To = tokenAddress,
